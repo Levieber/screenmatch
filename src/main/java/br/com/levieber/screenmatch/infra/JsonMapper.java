@@ -1,4 +1,4 @@
-package br.com.levieber.screenmatch.application.mappers;
+package br.com.levieber.screenmatch.infra;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
