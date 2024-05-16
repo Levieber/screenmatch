@@ -1,4 +1,4 @@
-package br.com.levieber.screenmatch.infra;
+package br.com.levieber.screenmatch.infra.api;
 
 import java.io.IOException;
 import java.net.URI;
