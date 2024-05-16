@@ -1,4 +1,4 @@
-package br.com.levieber.screenmatch.domain;
+package br.com.levieber.screenmatch.domain.entities;
 
 import br.com.levieber.screenmatch.application.mappers.EpisodeOmdbMapper;
 import com.fasterxml.jackson.annotation.JsonAlias;

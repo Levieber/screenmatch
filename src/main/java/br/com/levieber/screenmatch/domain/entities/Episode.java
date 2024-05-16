@@ -1,9 +1,10 @@
-package br.com.levieber.screenmatch.domain;
+package br.com.levieber.screenmatch.domain.entities;
 
 import br.com.levieber.screenmatch.application.mappers.EpisodeOmdbMapper;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
+import java.util.Optional;
+import java.util.OptionalDouble;
 
 public class Episode {
     private final String title;
@@ -16,20 +17,8 @@ public class Episode {
         this.season = season;
         this.title = episodeOmdb.title();
         this.number = episodeOmdb.number();
-        double rating;
-        LocalDate releaseDate;
-        try {
-            rating = Double.parseDouble(episodeOmdb.rating());
-        } catch (NumberFormatException e) {
-            rating = 0;
-        }
-        try {
-            releaseDate = LocalDate.parse(episodeOmdb.releaseDate());
-        } catch (DateTimeParseException e) {
-            releaseDate = null;
-        }
-        this.rating = rating;
-        this.releaseDate = releaseDate;
+        this.rating = OptionalDouble.of(Double.parseDouble(episodeOmdb.rating())).orElse(0);
+        this.releaseDate = Optional.of(LocalDate.parse(episodeOmdb.releaseDate())).orElse(null);
     }
 
     public String getTitle() {

@@ -1,7 +1,7 @@
 package br.com.levieber.screenmatch.application.presentation.controllers;
 
-import br.com.levieber.screenmatch.domain.Season;
-import br.com.levieber.screenmatch.domain.Series;
+import br.com.levieber.screenmatch.domain.entities.Season;
+import br.com.levieber.screenmatch.domain.entities.Series;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ public class SeasonController extends BaseController {
     public List<Season> index(Series series) {
         List<Season> seasons = new ArrayList<>();
         Stream.iterate(1, i -> i + 1)
-                .limit(series.totalSeasons())
+                .limit(series.getTotalSeasons())
                 .map(i -> {
                     try {
                         return jsonMapper.map(apiClient.get(buildApiUrl(
                                 "t=%s&season=%s",
-                                series.name(),
+                                series.getName(),
                                 String.valueOf(i)
                         )), Season.class);
                     } catch (Exception e) {
