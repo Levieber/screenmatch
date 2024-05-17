@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.OptionalDouble;
 
 @Entity
 public class Series {
@@ -23,13 +22,17 @@ public class Series {
     private String actors;
     private String poster;
     private String synopsis;
-    @Transient
+    @OneToMany(mappedBy = "series", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Episode> episodes = new ArrayList<>();
 
     public Series(SeriesOmdbMapper seriesOmdb) {
         this.name = seriesOmdb.name();
         this.totalSeasons = seriesOmdb.totalSeasons();
-        this.rating = OptionalDouble.of(Double.parseDouble(seriesOmdb.rating())).orElse(0);
+        try {
+            this.rating = Double.parseDouble(seriesOmdb.rating());
+        } catch (NumberFormatException e) {
+            this.rating = 0;
+        }
         this.genre = Genre.fromString(seriesOmdb.genre().split(",")[0].trim());
         this.actors = seriesOmdb.actors();
         this.poster = seriesOmdb.poster();
@@ -107,6 +110,7 @@ public class Series {
     }
 
     public void setEpisodes(List<Episode> episodes) {
+        episodes.forEach(e -> e.setSeries(this));
         this.episodes = episodes;
     }
 
@@ -120,6 +124,7 @@ public class Series {
                 ", actors=" + actors +
                 ", poster=" + poster +
                 ", synopsis=" + synopsis +
+                ", episodes="  + episodes +
                 '}';
 }
 }

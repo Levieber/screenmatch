@@ -1,44 +1,97 @@
 package br.com.levieber.screenmatch.domain.entities;
 
 import br.com.levieber.screenmatch.application.mappers.EpisodeOmdbMapper;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.Optional;
-import java.util.OptionalDouble;
+import java.time.format.DateTimeParseException;
 
+@Entity
+@Table(name = "episodes")
 public class Episode {
-    private final String title;
-    private final int number;
-    private final int season;
-    private final double rating;
-    private final LocalDate releaseDate;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String title;
+    private int number;
+    private int season;
+    private double rating;
+    private LocalDate releaseDate;
+    @ManyToOne
+    private Series series;
 
     public Episode(int season, EpisodeOmdbMapper episodeOmdb) {
         this.season = season;
         this.title = episodeOmdb.title();
         this.number = episodeOmdb.number();
-        this.rating = OptionalDouble.of(Double.parseDouble(episodeOmdb.rating())).orElse(0);
-        this.releaseDate = Optional.of(LocalDate.parse(episodeOmdb.releaseDate())).orElse(null);
+        try {
+            this.rating = Double.parseDouble(episodeOmdb.rating());
+        } catch (NumberFormatException e) {
+            this.rating = 0;
+        }
+        try {
+            this.releaseDate = LocalDate.parse(episodeOmdb.releaseDate());
+        } catch (DateTimeParseException e) {
+            this.releaseDate = null;
+        }
+    }
+
+    public Episode() {}
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public int getNumber() {
         return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public int getSeason() {
         return season;
     }
 
+    public void setSeason(int season) {
+        this.season = season;
+    }
+
     public double getRating() {
         return rating;
     }
 
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
     public LocalDate getReleaseDate() {
         return releaseDate;
+    }
+
+    public void setReleaseDate(LocalDate releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
     }
 
     @Override

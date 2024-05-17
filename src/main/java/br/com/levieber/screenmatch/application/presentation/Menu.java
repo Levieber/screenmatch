@@ -1,6 +1,6 @@
 package br.com.levieber.screenmatch.application.presentation;
 
-import br.com.levieber.screenmatch.application.presentation.controllers.SeasonController;
+import br.com.levieber.screenmatch.application.presentation.controllers.EpisodeController;
 import br.com.levieber.screenmatch.application.presentation.controllers.SeriesController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,7 +12,7 @@ public class Menu {
     @Autowired
     SeriesController seriesController;
     @Autowired
-    SeasonController seasonController;
+    EpisodeController episodeController;
     private final Scanner scanner = new Scanner(System.in);
 
     public void show() {
@@ -40,11 +40,13 @@ public class Menu {
                     break;
                 }
                 case 2: {
+                    seriesController.index().forEach(System.out::println);
                     System.out.println("Digite o nome da série:");
                     String seriesName = scanner.nextLine();
-                    var series = seriesController.get(seriesName);
-                    var seasons = seasonController.index(series);
-                    seasons.forEach(System.out::println);
+                    var series = episodeController.index(seriesName);
+                    if (series != null) {
+                        System.out.println(series);
+                    }
                     break;
                 }
                 case 3: {
