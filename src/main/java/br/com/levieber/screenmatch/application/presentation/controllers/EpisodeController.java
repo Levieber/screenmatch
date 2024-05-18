@@ -15,12 +15,12 @@ public class EpisodeController extends BaseController {
     @Autowired
     private SeriesRepository seriesRepository;
 
-    public Series index(String seriesName) {
-        Optional<Series> series = seriesRepository.findAll().stream().filter(s -> s.getName().toLowerCase().contains(seriesName.toLowerCase())).findFirst();
+    public Optional<Series> index(String seriesName) {
+        Optional<Series> series = seriesRepository.findByNameContainingIgnoreCase(seriesName);
 
         if (series.isEmpty()) {
             System.out.println("Série não encontrada!");
-            return null;
+            return Optional.empty();
         }
 
         var chosenSeries = series.get();
@@ -44,6 +44,6 @@ public class EpisodeController extends BaseController {
 
         chosenSeries.setEpisodes(episodes);
         seriesRepository.save(chosenSeries);
-        return chosenSeries;
+        return Optional.of(chosenSeries);
     }
 }
