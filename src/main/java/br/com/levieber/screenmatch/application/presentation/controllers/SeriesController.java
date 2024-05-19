@@ -29,7 +29,7 @@ public class SeriesController extends BaseController {
     }
 
     public Optional<Series> findByName(String seriesName) {
-        return seriesRepository.findByNameContainingIgnoreCase(seriesName);
+        return seriesRepository.findFirstByNameContainingIgnoreCase(seriesName);
     }
 
     public List<Series> findByActor(String actorName, double rating) {
@@ -44,7 +44,7 @@ public class SeriesController extends BaseController {
         return seriesRepository.findByGenre(Genre.fromPortugueseString(genre));
     }
 
-    public List<Series> findShort(int maxSeasons, double rating) {
-        return seriesRepository.findByTotalSeasonsLessThanEqualAndRatingGreaterThanEqual(maxSeasons, rating);
+    public List<Series> findShort(int maxSeasons, double minRating) {
+        return seriesRepository.findBySeasonAndRating(maxSeasons, minRating);
     }
 }

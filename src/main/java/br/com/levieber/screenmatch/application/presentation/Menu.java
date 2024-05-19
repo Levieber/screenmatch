@@ -26,6 +26,9 @@ public class Menu {
                     6 - Listar top 5 séries
                     7 - Buscar por um gênero
                     8 - Buscar séries curtas
+                    9 - Buscar episódio por título
+                    10 - Listar top 5 episódios de uma série
+                    11 - Buscar episódios de uma série a partir de um ano
                     -1 - Sair
                     Escolha uma opção:""");
             var option = scanner.nextInt();
@@ -121,6 +124,73 @@ public class Menu {
                         seriesList.forEach(s -> System.out.printf("Série %s com nota %.1f%n", s.getName(), s.getRating()));
                     } else {
                         System.out.println("Séries com esse critério não encontradas!");
+                    }
+                    break;
+                }
+                case 9: {
+                    System.out.println("Digite o nome do episódio:");
+                    String episodeTitle = scanner.nextLine();
+                    var episodes = episodeController.findByTitle(episodeTitle);
+                    if (!episodes.isEmpty()) {
+                        episodes.forEach(e -> System.out.printf(
+                                "Série: %s Temporada %d - Episódio %.1f - %s%n",
+                                e.getSeries().getName(),
+                                e.getSeason(),
+                                e.getRating(),
+                                e.getTitle()
+                        ));
+                    } else {
+                        System.out.println("Episódios com esse critério não encontradas!");
+                    }
+                    break;
+                }
+                case 10: {
+                    System.out.println("Digite o nome da série:");
+                    String seriesName = scanner.nextLine();
+                    var series = seriesController.findByName(seriesName);
+                    if (series.isEmpty()) {
+                        System.out.println("Série não encontrada!");
+                        break;
+                    }
+                    var episodes = episodeController.findTop5FromSeries(series.get());
+                    if (!episodes.isEmpty()) {
+                        episodes.forEach(e -> System.out.printf(
+                                "Série %s - Episódio %d da temporada %d com nota %.1f - %s%n",
+                                e.getSeries().getName(),
+                                e.getNumber(),
+                                e.getSeason(),
+                                e.getRating(),
+                                e.getTitle()
+                        ));
+                    } else {
+                        System.out.printf("Não há episódios da série %s. Busque os episódios dela.%n", seriesName);
+                    }
+                    break;
+                }
+                case 11: {
+                    System.out.println("Digite o nome da série:");
+                    String seriesName = scanner.nextLine();
+                    var series = seriesController.findByName(seriesName);
+                    if (series.isEmpty()) {
+                        System.out.println("Série não encontrada!");
+                        break;
+                    }
+                    System.out.println("Digite o ano de lançamento inicial:");
+                    var releaseYear = scanner.nextInt();
+                    scanner.nextLine();
+                    var episodes = episodeController.findByAfterReleaseYear(releaseYear, series.get());
+                    if (!episodes.isEmpty()) {
+                        episodes.forEach(e -> System.out.printf(
+                                "Série %s - Episódio %d da temporada %d com nota %.1f lançado em %s - %s%n",
+                                e.getSeries().getName(),
+                                e.getNumber(),
+                                e.getSeason(),
+                                e.getRating(),
+                                e.getReleaseDate(),
+                                e.getTitle()
+                        ));
+                    } else {
+                        System.out.println("Episódios com esse critério não encontrados!");
                     }
                     break;
                 }

@@ -16,10 +16,9 @@ public class EpisodeController extends BaseController {
     private SeriesRepository seriesRepository;
 
     public Optional<Series> index(String seriesName) {
-        Optional<Series> series = seriesRepository.findByNameContainingIgnoreCase(seriesName);
+        Optional<Series> series = seriesRepository.findFirstByNameContainingIgnoreCase(seriesName);
 
         if (series.isEmpty()) {
-            System.out.println("Série não encontrada!");
             return Optional.empty();
         }
 
@@ -45,5 +44,17 @@ public class EpisodeController extends BaseController {
         chosenSeries.setEpisodes(episodes);
         seriesRepository.save(chosenSeries);
         return Optional.of(chosenSeries);
+    }
+
+    public List<Episode> findByTitle(String episodeTitle) {
+        return seriesRepository.findEpisodeByTitle(episodeTitle);
+    }
+
+    public List<Episode> findTop5FromSeries(Series series) {
+        return seriesRepository.findTop5EpisodesFromSeries(series);
+    }
+
+    public List<Episode> findByAfterReleaseYear(int releaseYear, Series series) {
+        return seriesRepository.findEpisodeByAfterReleaseYearFromSeries(releaseYear, series);
     }
 }
