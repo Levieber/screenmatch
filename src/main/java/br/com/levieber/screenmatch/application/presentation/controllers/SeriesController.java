@@ -1,23 +1,39 @@
 package br.com.levieber.screenmatch.application.presentation.controllers;
 
+import br.com.levieber.screenmatch.application.dtos.SeriesDto;
 import br.com.levieber.screenmatch.application.mappers.SeriesOmdbMapper;
 import br.com.levieber.screenmatch.application.repositories.SeriesRepository;
 import br.com.levieber.screenmatch.domain.entities.Series;
 import br.com.levieber.screenmatch.domain.enums.Genre;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@RestController
 public class SeriesController extends BaseController {
     @Autowired
     SeriesRepository seriesRepository;
 
-    public List<Series> index() {
-        return seriesRepository.findAll().stream().sorted(Comparator.comparing(Series::getGenre)).toList();
+    @GetMapping("/series")
+    public List<SeriesDto> index() {
+        return seriesRepository.findAll()
+                .stream()
+                .map(s ->
+                    new SeriesDto(
+                            s.getId(),
+                            s.getName(),
+                            s.getTotalSeasons(),
+                            s.getRating(),
+                            s.getGenre(),
+                            s.getActors(),
+                            s.getPoster(),
+                            s.getSynopsis()
+                    )
+                )
+                .toList();
     }
 
     public Series get(String seriesName) {
@@ -36,8 +52,23 @@ public class SeriesController extends BaseController {
         return seriesRepository.findByActorsContainingIgnoreCaseAndRatingGreaterThanEqual(actorName, rating);
     }
 
-    public List<Series> findTop5() {
-        return seriesRepository.findTop5ByOrderByRatingDesc();
+    @GetMapping("/series/top5")
+    public List<SeriesDto> findTop5() {
+        return seriesRepository.findTop5ByOrderByRatingDesc()
+                .stream()
+                .map(s ->
+                        new SeriesDto(
+                                s.getId(),
+                                s.getName(),
+                                s.getTotalSeasons(),
+                                s.getRating(),
+                                s.getGenre(),
+                                s.getActors(),
+                                s.getPoster(),
+                                s.getSynopsis()
+                        )
+                )
+                .toList();
     }
 
     public List<Series> findByGenre(String genre) {
