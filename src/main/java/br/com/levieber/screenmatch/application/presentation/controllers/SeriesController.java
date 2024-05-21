@@ -1,81 +1,60 @@
 package br.com.levieber.screenmatch.application.presentation.controllers;
 
+import br.com.levieber.screenmatch.application.dtos.EpisodeDto;
 import br.com.levieber.screenmatch.application.dtos.SeriesDto;
-import br.com.levieber.screenmatch.application.mappers.SeriesOmdbMapper;
-import br.com.levieber.screenmatch.application.repositories.SeriesRepository;
-import br.com.levieber.screenmatch.domain.entities.Series;
-import br.com.levieber.screenmatch.domain.enums.Genre;
+import br.com.levieber.screenmatch.application.services.SeriesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/series")
 public class SeriesController extends BaseController {
-    @Autowired
-    SeriesRepository seriesRepository;
+   @Autowired
+   private SeriesService seriesService;
 
-    @GetMapping("/series")
+    @GetMapping
     public List<SeriesDto> index() {
-        return seriesRepository.findAll()
-                .stream()
-                .map(s ->
-                    new SeriesDto(
-                            s.getId(),
-                            s.getName(),
-                            s.getTotalSeasons(),
-                            s.getRating(),
-                            s.getGenre(),
-                            s.getActors(),
-                            s.getPoster(),
-                            s.getSynopsis()
-                    )
-                )
-                .toList();
+        return seriesService.getAll();
     }
 
-    public Series get(String seriesName) {
-        String json = apiClient.get(buildApiUrl("t=%s", seriesName));
-        var seriesOmdb = jsonMapper.map(json, SeriesOmdbMapper.class);
-        var series = new Series(seriesOmdb);
-        seriesRepository.save(series);
-        return series;
+    @GetMapping("/top5")
+    public List<SeriesDto> showTop5() {
+        return seriesService.getTop5();
     }
 
-    public Optional<Series> findByName(String seriesName) {
-        return seriesRepository.findFirstByNameContainingIgnoreCase(seriesName);
+    @GetMapping("/news")
+    public List<SeriesDto> showNews() {
+        return seriesService.getNews();
     }
 
-    public List<Series> findByActor(String actorName, double rating) {
-        return seriesRepository.findByActorsContainingIgnoreCaseAndRatingGreaterThanEqual(actorName, rating);
+    @GetMapping("/{id}")
+    public Optional<SeriesDto> show(@PathVariable Long id) {
+        return seriesService.getById(id);
     }
 
-    @GetMapping("/series/top5")
-    public List<SeriesDto> findTop5() {
-        return seriesRepository.findTop5ByOrderByRatingDesc()
-                .stream()
-                .map(s ->
-                        new SeriesDto(
-                                s.getId(),
-                                s.getName(),
-                                s.getTotalSeasons(),
-                                s.getRating(),
-                                s.getGenre(),
-                                s.getActors(),
-                                s.getPoster(),
-                                s.getSynopsis()
-                        )
-                )
-                .toList();
+    @GetMapping("/{id}/seasons/all")
+    public List<EpisodeDto> showSeasons(@PathVariable Long id) {
+        return seriesService.getSeasonsFromSeries(id);
     }
 
-    public List<Series> findByGenre(String genre) {
-        return seriesRepository.findByGenre(Genre.fromPortugueseString(genre));
+    @GetMapping("/{seriesId}/seasons/{seasonId}")
+    public List<EpisodeDto> showSeasonEpisodes(@PathVariable Long seriesId, @PathVariable Long seasonId) {
+        return seriesService.getSeasonEpisodes(seriesId, seasonId);
     }
 
-    public List<Series> findShort(int maxSeasons, double minRating) {
-        return seriesRepository.findBySeasonAndRating(maxSeasons, minRating);
+    @GetMapping("/{seriesId}/seasons/top5")
+    public List<EpisodeDto> showTop5EpisodesFromSeries(@PathVariable Long seriesId) {
+        return seriesService.getTop5EpisodesFromSeries(seriesId);
+    }
+
+    @GetMapping("/genre/{genreId}")
+    public List<SeriesDto> showSeriesByGenre(@PathVariable String genreId) {
+        return seriesService.getSeriesByGenre(genreId);
     }
 }
